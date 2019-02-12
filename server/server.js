@@ -25,14 +25,20 @@ io.on('connection',(socket)=>{
         console.log("client disconnected...")
     })
 
-})
+    socket.on("createEmail", (email)=>{
+        console.log("new email:", email);
+    })
 
-// app.get('/',(req,res)=>{
-//     res.render("index.html")
-// })
+    socket.emit("newEmail",{ from:"jessica@simpson.com",text:"hey there i am using whatsapp",createdAt:123 } );
+
+    socket.emit("newMessage", {from:"mr.bean",text:"hello",createdAt:123});
+    
+    socket.on("createMessage", (message)=>{
+        console.log("message :", message);
+    })
+    
+})
 
 server.listen(port, ()=>{
     console.log("server is up and running on port " + port);
 })
-
-module.exports= {app};
