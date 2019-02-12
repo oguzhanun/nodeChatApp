@@ -7,7 +7,15 @@
     <body>
         <p>This is the Index Page...</p>
     
+        <form id="message-form">
+            <input name="message-input" type="text" placeholder="Message"/>
+            <button type="submit" role="button">Send</button>
+        </form>
+
+        <ol id="message-list"></ol>
+
         <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/libs/jquery-3.3.1.min.js"></script>
         <script src="/js/index.js"></script>
     </body>
 

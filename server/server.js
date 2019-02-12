@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const socketIO = require('socket.io');
 const http = require('http');
-
+const {messageGenerator} = require('./utils/message');
 var staticFolder = path.join(__dirname,"../public");
 
 var app = express();
@@ -20,20 +20,21 @@ io.on('connection',(socket)=>{
     
     console.log('client has connected...');
 
-    socket.emit("newMessage",{
-        text : "Welcome to the chat app...",
-        createdAt : new Date().getTime(),
-        from : "Admin"
-    });
+    socket.emit("newMessage", messageGenerator("Admin","Welcome to the chat app..."));
 
-    socket.broadcast.emit("newMessage", {
-        from : "Admin",
-        text : "A new friend joined us"
-    })
+    socket.broadcast.emit("newMessage", messageGenerator("Admin","A new friend joined us"))
 
     // birinden bir mesaj gelirse diye dinliyor...
-    socket.on("createMessage", (message)=>{
+    socket.on("createMessage", function (message, callback) {
         console.log("message :", message);
+        
+        // bu if clause u kullanmazsan callback is not a function hatası veriyor...
+        // İLGİNÇ ?_?_?_?_?_?_?_?_?_?_?_?_?_?_?_?
+        if(typeof callback === 'function')
+            {
+                callback("that is from server");
+            }
+        
 
         // mesaj geldiğinde bunu herkese, gönderen dahil gönderiyor...
         // io.emit("newMessage", {
@@ -43,12 +44,12 @@ io.on('connection',(socket)=>{
         // })
 
         // burada ise gönderiyi yapan dışında geri kalan herkese mesaj iletiliyor...
-        // socket.broadcast.emit("newMessage",{
-        //     text : message.text,
-        //     from : message.from,
-        //     createdAt : new Date().getTime()
-        // })
-    })
+        socket.broadcast.emit("newMessage",{
+            text : message.text,
+            from : message.from,
+            createdAt : new Date().getTime()
+        })
+    });
 
     // socket.on("createEmail", (email)=>{
     //     console.log("new email:", email);
