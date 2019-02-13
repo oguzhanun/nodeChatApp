@@ -44,7 +44,8 @@ io.on('connection',(socket)=>{
         // })
 
         // burada ise gönderiyi yapan dışında geri kalan herkese mesaj iletiliyor...
-        socket.broadcast.emit("newMessage",{
+        //socket.broadcast
+        io.emit("newMessage",{
             text : message.text,
             from : message.from,
             createdAt : new Date().getTime()

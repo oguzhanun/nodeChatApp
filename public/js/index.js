@@ -26,10 +26,13 @@ jQuery('#message-form').on('submit', function(e){
     var message = jQuery('[name=message-input]').val();
     
     socket.emit('createMessage', {from : 'User', text : message}, function(){
+        
         console.log("message sent");
-    })
 
-    $('[name=message-input]').val("");
+        // acknowledgement sonrasında text input girdisini sıfırlıyoruz...
+        $('[name=message-input]').val("");
+    
+    })
 
 })
 
@@ -39,6 +42,7 @@ socket.on("newMessage", function(message){
     console.log("message :", message);
 
     var li = $('<li></li>');
+    
     li.text(message.from + ": " + message.text);
 
     $('#message-list').append(li);
@@ -48,13 +52,19 @@ socket.on("newMessage", function(message){
 var sendLocationButton = $('#send-location');
 
 sendLocationButton.on('click', function(){
+    
     if(!navigator.geolocation){
         return alert("Your browser does not support geolocation api!");
     }
+
+    sendLocationButton.attr('disabled','disabled').text('Sending Location...');
+
     navigator.geolocation.getCurrentPosition(function(position){
-        console.log(position);
+        //console.log(position);
         socket.emit("createLocation", { latitude : position.coords.latitude, longitude : position.coords.longitude } )
+        sendLocationButton.removeAttr('disabled').text('Send Location');
     }, function(error){
+        sendLocationButton.removeAttr('disabled').text('Send Location');
         return alert(error);
     })
 

@@ -3,17 +3,30 @@
     <head>
         <meta charset="utf-8">
         <title>Index Page</title>
+        <link rel="stylesheet" href="css/styles.css">
     </head>
-    <body>
-        <p>This is the Index Page...</p>
+    <body class="chat">
+
+        <div class="chat__sidebar">
+            <h3>People</h3>
+            <div id="users"></div>
+        </div>
+
+        <div class="chat__main">
+            <ol id="message-list" class="chat__messages"></ol>
+            
+            <div class="chat__footer">
+                <form id="message-form">
+                    <input name="message-input" type="text" placeholder="Message"/>
+                    <button type="submit" role="button">Send</button>
+                </form>
+                <button id="send-location">Send Location</button>
+            </div>
+        
+        </div>
     
-        <form id="message-form">
-            <input name="message-input" type="text" placeholder="Message"/>
-            <button type="submit" role="button">Send</button>
-        </form>
-        <br/>
-        <button id="send-location">Send Location</button>
-        <ol id="message-list"></ol>
+        
+        
 
         <script src="/socket.io/socket.io.js"></script>
         <script src="/js/libs/jquery-3.3.1.min.js"></script>
