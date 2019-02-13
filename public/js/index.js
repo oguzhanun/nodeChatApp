@@ -1,4 +1,5 @@
 var socket = io();
+//var moment = require('moment');
             
 socket.on("connect", function(){
     
@@ -42,8 +43,10 @@ socket.on("newMessage", function(message){
     console.log("message :", message);
 
     var li = $('<li></li>');
-    
-    li.text(message.from + ": " + message.text);
+
+    var formattedTime = moment(message.createdAt).format('hh:mm a');
+
+    li.text(message.from + " "+ formattedTime  + " - " + message.text);
 
     $('#message-list').append(li);
 
@@ -57,7 +60,8 @@ sendLocationButton.on('click', function(){
         return alert("Your browser does not support geolocation api!");
     }
 
-    sendLocationButton.attr('disabled','disabled').text('Sending Location...');
+    // disable attribute ı hem true hem de "disabled" olarak işe yarıyor...
+    sendLocationButton.attr('disabled', true).text('Sending Location...');
 
     navigator.geolocation.getCurrentPosition(function(position){
         //console.log(position);
@@ -74,7 +78,7 @@ socket.on("newLocation", function(data){
     var li = $(`<li></li>`);
     var a = $('<a target="_blank">New Location</a>');
     a.attr('href',data.url);
-    li.text(data.from + ":");
+    li.text(data.from + " " + moment(data.createdAt).format('hh:mm a') + " - ");
     li.append(a);
     $('#message-list').append(li);
     
