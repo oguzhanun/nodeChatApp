@@ -45,6 +45,31 @@ socket.on("newMessage", function(message){
 
 })
 
+var sendLocationButton = $('#send-location');
+
+sendLocationButton.on('click', function(){
+    if(!navigator.geolocation){
+        return alert("Your browser does not support geolocation api!");
+    }
+    navigator.geolocation.getCurrentPosition(function(position){
+        console.log(position);
+        socket.emit("createLocation", { latitude : position.coords.latitude, longitude : position.coords.longitude } )
+    }, function(error){
+        return alert(error);
+    })
+
+})
+
+socket.on("newLocation", function(data){
+    var li = $(`<li></li>`);
+    var a = $('<a target="_blank">New Location</a>');
+    a.attr('href',data.url);
+    li.text(data.from + ":");
+    li.append(a);
+    $('#message-list').append(li);
+    
+})
+
 socket.on("disconnect", function(){
     console.log("disconnected...")
 })

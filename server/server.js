@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const socketIO = require('socket.io');
 const http = require('http');
-const {messageGenerator} = require('./utils/message');
+const {messageGenerator,locationGenerator} = require('./utils/message');
 var staticFolder = path.join(__dirname,"../public");
 
 var app = express();
@@ -50,6 +50,15 @@ io.on('connection',(socket)=>{
             createdAt : new Date().getTime()
         })
     });
+
+    socket.on("createLocation", function(coords){
+
+        // yalnızca text olarak gönderirken bunu kullanıyoruz...
+        //io.emit("newMessage", messageGenerator('admin', `latitude : ${coords.latitude}, longitude : ${coords.longitude}`));
+        
+        io.emit("newLocation", locationGenerator('user',coords.latitude, coords.longitude));
+
+    })
 
     // socket.on("createEmail", (email)=>{
     //     console.log("new email:", email);
