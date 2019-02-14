@@ -1,6 +1,22 @@
 var socket = io();
 //var moment = require('moment');
             
+function scrollToBottom (){
+    var messages = $('#message-list');
+    var newMessage = messages.children("li:last-child");
+    var lastMessage = newMessage.prev();
+
+    var clientHeight = messages.prop("clientHeight");
+    var scrollTop = messages.prop("scrollTop");
+    var scrollHeight = messages.prop("scrollHeight")
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHeight = lastMessage.innerHeight();
+
+    if(lastMessageHeight + newMessageHeight + scrollTop + clientHeight >= scrollHeight ){
+        messages.scrollTop(scrollHeight);
+    }
+}
+
 socket.on("connect", function(){
     
     console.log("connection to server is established...");
@@ -52,6 +68,8 @@ socket.on("newMessage", function(message){
 
     $('#message-list').append(template);
 
+    scrollToBottom();
+
     //console.log("message :", message);
 
     // var li = $('<li></li>');
@@ -99,6 +117,8 @@ socket.on("newLocation", function(data){
     });
 
     $('#message-list').append(template);
+
+    scrollToBottom();
 
     // var li = $(`<li></li>`);
     // var a = $('<a target="_blank">New Location</a>');
