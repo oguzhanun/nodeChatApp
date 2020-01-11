@@ -2,10 +2,16 @@ const path = require('path');
 const express = require('express');
 const socketIO = require('socket.io');
 const http = require('http');
+const {User} = require('./utils/users.js')
+const {isRegularString} = require('./utils/validation.js');
 const {messageGenerator,locationGenerator} = require('./utils/message');
+
+
 var staticFolder = path.join(__dirname,"../public");
 
 var app = express();
+
+var userRoom;
 
 app.use(express.static(staticFolder));
 
@@ -19,10 +25,6 @@ var io = socketIO(server);
 io.on('connection',(socket)=>{
     
     console.log('client has connected...');
-
-    socket.emit("newMessage", messageGenerator("Admin","Welcome to the chat app..."));
-
-    socket.broadcast.emit("newMessage", messageGenerator("Admin","A new friend joined us"))
 
     // birinden bir mesaj gelirse diye dinliyor...
     socket.on("createMessage", function (message, callback) {
@@ -45,7 +47,7 @@ io.on('connection',(socket)=>{
 
         // burada ise gönderiyi yapan dışında geri kalan herkese mesaj iletiliyor...
         //socket.broadcast
-        io.emit("newMessage",{
+        io.to(userRoom).emit("newMessage",{
             text : message.text,
             from : message.from,
             createdAt : new Date().getTime()
@@ -58,6 +60,39 @@ io.on('connection',(socket)=>{
         //io.emit("newMessage", messageGenerator('admin', `latitude : ${coords.latitude}, longitude : ${coords.longitude}`));
         
         io.emit("newLocation", locationGenerator('user',coords.latitude, coords.longitude));
+
+    })
+
+    socket.on("join", (params, callback)=>{
+        
+        //if(typeof callback === 'function'){
+        
+        if(!isRegularString(params.name) || !isRegularString(params.room)){
+            return callback("please check the display name and chat room parameters!");
+        }
+        
+        var user = new User();
+        
+        user.addUser(socket.id, params.name, params.room);
+        
+        console.log(JSON.stringify(user.getListOfUsers, undefined, 5));
+        
+        userRoom = params.room;
+
+        socket.join(params.room);
+
+        socket.emit("newMessage", messageGenerator("Admin","Welcome to the chat app..."));
+
+        socket.broadcast.to(params.room).emit("newMessage", messageGenerator("Admin",`${params.name} joined the room`)) 
+        
+        callback(undefined); 
+
+        // socket.leave(params.room);
+        // io.to(params.room).emit("newMessage",messageGenerator("admin",`${params.name} has joined the room`));
+        // socket.broadcast.to(params.room).emit....
+        
+                
+        //}
 
     })
 

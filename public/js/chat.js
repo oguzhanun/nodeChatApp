@@ -19,7 +19,18 @@ function scrollToBottom (){
 
 socket.on("connect", function(){
     
-    console.log("connection to server is established...");
+    var params = jQuery.deparam(window.location.search);
+
+    socket.emit('join', params, function(err){
+        if(err){
+            alert(err);
+            window.location.href="/";
+        } else {
+            console.log("no error, welcome to the chat room...")
+        }
+    });
+
+    //console.log("connection to server is established...");
     
     // bağlantı kurulur kurulmaz server a email gönderiyor...
     // socket.emit( "createEmail",{to:"jessica@simpson.com",text:"ok buddy" } );
